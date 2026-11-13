@@ -1,12 +1,14 @@
 
 import 'package:flutter/material.dart';
 
+import '../models/documento.dart';
+
 class EditorView extends StatefulWidget {
-  final String? conteudoInicial;
+  final Documento? documento;
 
   const EditorView({
     super.key,
-    this.conteudoInicial,
+    this.documento,
   });
 
   @override
@@ -14,43 +16,88 @@ class EditorView extends StatefulWidget {
 }
 
 class _EditorViewState extends State<EditorView> {
-  late final TextEditingController _controller;
+  late final TextEditingController _tituloController;
+  late final TextEditingController _conteudoController;
 
   @override
   void initState() {
     super.initState();
 
-    _controller = TextEditingController(
-      text: widget.conteudoInicial ??
-          'Bem-vindo ao seu Editor de Documentos!\n\n'
-              'Aqui você pode redigir notas, editar arquivos '
-              'de texto e gerenciar seus documentos.',
+    _tituloController = TextEditingController(
+      text: widget.documento?.titulo ?? '',
+    );
+
+    _conteudoController = TextEditingController(
+      text: widget.documento?.conteudo ?? '',
     );
   }
 
   void _salvarDocumento() {
-    Navigator.pop(context, _controller.text);
+    final titulo = _tituloController.text.trim();
+    final conteudo = _conteudoController.text.trim();
+
+    if (titulo.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Digite um título para o documento.'),
+        ),
+      );
+      return;
+    }
+
+    if (conteudo.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Digite algum conteúdo para o documento.'),
+        ),
+      );
+      return;
+    }
+
+    Navigator.pop(
+      context,
+      {
+        'titulo': titulo,
+        'conteudo': conteudo,
+      },
+    );
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _tituloController.dispose();
+    _conteudoController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final editando = widget.documento != null;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Editor de Documentos'),
+        title: Text(
+          editando ? 'Editar Documento' : 'Novo Documento',
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            TextField(
+              controller: _tituloController,
+              decoration: const InputDecoration(
+                labelText: 'Título do documento',
+                hintText: 'Digite um título...',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
             Expanded(
               child: TextField(
-                controller: _controller,
+                controller: _conteudoController,
                 expands: true,
                 maxLines: null,
                 textAlignVertical: TextAlignVertical.top,
@@ -69,7 +116,11 @@ class _EditorViewState extends State<EditorView> {
               child: ElevatedButton.icon(
                 onPressed: _salvarDocumento,
                 icon: const Icon(Icons.save),
-                label: const Text('Salvar documento'),
+                label: Text(
+                  editando
+                      ? 'Salvar alterações'
+                      : 'Criar documento',
+                ),
               ),
             ),
           ],

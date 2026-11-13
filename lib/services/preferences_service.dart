@@ -1,15 +1,18 @@
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesService {
-  static final Map<String, dynamic> _dados = {};
+  static const String _chaveTema = 'tema';
+  static const String _chaveNotificacoes = 'notificacoes';
 
-  // Controla o tema do aplicativo inteiro.
   static final ValueNotifier<ThemeMode> temaApp =
       ValueNotifier<ThemeMode>(ThemeMode.light);
 
   static Future<void> salvarTema(String tema) async {
-    _dados['tema'] = tema;
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString(_chaveTema, tema);
 
     temaApp.value = tema == 'Escuro'
         ? ThemeMode.dark
@@ -17,14 +20,41 @@ class PreferencesService {
   }
 
   static Future<void> salvarNotificacoes(bool ativo) async {
-    _dados['notificacoes'] = ativo;
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setBool(_chaveNotificacoes, ativo);
   }
 
   static Future<String> carregarTema() async {
-    return _dados['tema'] ?? 'Claro';
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(_chaveTema) ?? 'Claro';
   }
 
   static Future<bool> carregarNotificacoes() async {
-    return _dados['notificacoes'] ?? true;
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(_chaveNotificacoes) ?? true;
+  }
+
+  // Salva a sessão do usuário.
+  static Future<void> salvarSessao(String email) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('sessao_usuario', email);
+  }
+
+  // Recupera a sessão salva.
+  static Future<String?> carregarSessao() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString('sessao_usuario');
+  }
+
+  // Encerra a sessão.
+  static Future<void> limparSessao() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.remove('sessao_usuario');
   }
 }

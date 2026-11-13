@@ -23,6 +23,12 @@ class AuthViewModel extends ChangeNotifier {
         senha,
       );
 
+      if (usuarioAutenticado != null) {
+        await PreferencesService.salvarSessao(
+          usuarioAutenticado!.email,
+        );
+      }
+
       return usuarioAutenticado;
     } finally {
       carregando = false;
@@ -66,5 +72,14 @@ class AuthViewModel extends ChangeNotifier {
       carregando = false;
       notifyListeners();
     }
+  }
+
+  // Encerra a sessão do usuário.
+  Future<void> encerrarSessao() async {
+    usuarioAutenticado = null;
+
+    await PreferencesService.limparSessao();
+
+    notifyListeners();
   }
 }
