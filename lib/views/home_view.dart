@@ -94,25 +94,28 @@ class _HomeViewState extends State<HomeView> {
                     child: Text('Escolha o tema:'),
                   ),
 
-                  RadioListTile<String>(
-                    title: const Text('Tema Claro'),
-                    value: 'Claro',
+                  
+                  RadioGroup<String>(
                     groupValue: _viewModel.temaSelecionado,
-                    onChanged: (value) async {
-                      await _viewModel.alterarTema(value!);
-                      setDialogState(() {});
+                    onChanged: (value) {
+                      setState(() {
+                        _viewModel.alterarTema(value!);
+                      });
                     },
+                    child: Column(
+                      children: [
+                        RadioListTile<String>(
+                          title: const Text('Tema Claro'),
+                          value: 'Claro',
+                        ),
+                        RadioListTile<String>(
+                          title: const Text('Tema Escuro'),
+                          value: 'Escuro',
+                        ),
+                      ],
+                    ),
                   ),
 
-                  RadioListTile<String>(
-                    title: const Text('Tema Escuro'),
-                    value: 'Escuro',
-                    groupValue: _viewModel.temaSelecionado,
-                    onChanged: (value) async {
-                      await _viewModel.alterarTema(value!);
-                      setDialogState(() {});
-                    },
-                  ),
 
                   const Divider(),
 

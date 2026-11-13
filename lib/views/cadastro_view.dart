@@ -132,27 +132,28 @@ class _CadastroViewState extends State<CadastroView> {
 
                   const Text('Escolha o tema:'),
 
-                  RadioListTile<String>(
-                    title: const Text('Tema Claro'),
-                    value: 'Claro',
+                  
+                  RadioGroup<String>(
                     groupValue: _temaSelecionado,
                     onChanged: (value) {
                       setState(() {
                         _temaSelecionado = value!;
                       });
                     },
+                    child: Column(
+                      children: [
+                        RadioListTile<String>(
+                          title: const Text('Tema Claro'),
+                          value: 'Claro',
+                        ),
+                        RadioListTile<String>(
+                          title: const Text('Tema Escuro'),
+                          value: 'Escuro',
+                        ),
+                      ],
+                    ),
                   ),
 
-                  RadioListTile<String>(
-                    title: const Text('Tema Escuro'),
-                    value: 'Escuro',
-                    groupValue: _temaSelecionado,
-                    onChanged: (value) {
-                      setState(() {
-                        _temaSelecionado = value!;
-                      });
-                    },
-                  ),
 
                   const Divider(),
 
